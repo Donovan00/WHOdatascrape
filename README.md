@@ -1,2 +1,4 @@
 # WHOdatascrape
-data scarping to spreadsheet from WHO disease outbreak news
+data scrape WHO disease outbreak news articles 
+
+data elements sent to "WHODONdatabase2022-2024" google spreadsheet 
