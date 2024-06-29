@@ -11,8 +11,23 @@ def scrape_data(url):
         DONid = "DON-" + url.split('/')[-1]
         headline = soup.find('h1', class_='don-title').text.strip()
         date = soup.find('span', class_='timestamp').text.strip()
-        disease = "Ebola"
-        country = headline[headline.find('–') + 1:].strip()
+
+        parts = None
+        if ' - ' in headline:
+            parts = headline.split(' - ')
+        elif ' – ' in headline:
+            parts = headline.split(' – ')
+
+        if parts:
+            disease = parts[0].strip()
+            country = parts[1].strip()
+        else:
+            disease = headline.strip()
+            country = headline.strip()
+
+
+
+        print(disease)
 
         return [DONid, headline, date, url, disease, country]
     else:
@@ -36,12 +51,26 @@ except gspread.SpreadsheetNotFound:
     print("Spreadsheet not found. Please check the name and sharing settings.")
     exit()
 
-url = 'https://www.who.int/emergencies/disease-outbreak-news/item/2022-DON377'
-data = scrape_data(url)
+# URLs to scrape
+urls = [
+    'https://www.who.int/emergencies/disease-outbreak-news/item/2024-DON518',
+    'https://www.who.int/emergencies/disease-outbreak-news/item/2023-DON498',
+    'https://www.who.int/emergencies/disease-outbreak-news/item/2023-DON491',
+    'https://www.who.int/emergencies/disease-outbreak-news/item/2023-DON481',
+    'https://www.who.int/emergencies/disease-outbreak-news/item/2023-DON475',
+    'https://www.who.int/emergencies/disease-outbreak-news/item/2023-DON448',
+    'https://www.who.int/emergencies/disease-outbreak-news/item/2022-DON424',
+    'https://www.who.int/emergencies/disease-outbreak-news/item/2022-DON414',
+    'https://www.who.int/emergencies/disease-outbreak-news/item/2022-DON412',
+    'https://www.who.int/emergencies/disease-outbreak-news/item/2022-DON401',
+    'https://www.who.int/emergencies/disease-outbreak-news/item/2022-DON387',
+    'https://www.who.int/emergencies/disease-outbreak-news/item/dengue---timor-leste'
+]
 
-# Add the data to the sheet
-if data:
-    sheet.append_row(data)
-    print("Data added successfully.")
-else:
-    print("Failed to add data.")
+for url in urls:
+    data = scrape_data(url)
+    if data:
+        sheet.append_row(data)
+        print(f"Data from {url} added successfully.")
+    else:
+        print(f"Failed to add data from {url}.")
